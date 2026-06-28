@@ -125,6 +125,30 @@ def apply_theme() -> None:
             border-radius: 7px;
             border: 1px solid var(--primary);
             font-weight: 650;
+            background: #256f46 !important;
+            color: #ffffff !important;
+            min-height: 44px;
+        }
+        .stButton > button *,
+        .stDownloadButton > button * {
+            color: #ffffff !important;
+            opacity: 1 !important;
+        }
+        .stButton > button:hover,
+        .stDownloadButton > button:hover {
+            background: #1f5d3b !important;
+            border-color: #1f5d3b !important;
+            color: #ffffff !important;
+        }
+        .stButton > button:disabled,
+        .stDownloadButton > button:disabled {
+            background: #dbe5de !important;
+            border-color: #c8d6ce !important;
+            color: #65736b !important;
+        }
+        .stButton > button:disabled *,
+        .stDownloadButton > button:disabled * {
+            color: #65736b !important;
         }
         div[data-testid="stExpander"] {
             border: 1px solid var(--line);
@@ -179,8 +203,17 @@ def apply_theme() -> None:
             border-radius: 8px;
             padding: 12px;
         }
-        div[data-testid="stForm"] *:not(button):not(svg):not(path) {
+        div[data-testid="stForm"] label,
+        div[data-testid="stForm"] p,
+        div[data-testid="stForm"] span:not(button span),
+        div[data-testid="stForm"] input,
+        div[data-testid="stForm"] textarea {
             color: #17231b !important;
+            opacity: 1 !important;
+        }
+        div[data-testid="stForm"] button,
+        div[data-testid="stForm"] button * {
+            color: #ffffff !important;
             opacity: 1 !important;
         }
         @media (max-width: 640px) {
