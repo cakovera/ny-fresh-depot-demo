@@ -8,6 +8,7 @@ import streamlit as st
 from database import init_db, seed_demo_customers
 from invoice import create_invoice_pdf, invoice_items
 from reports import (
+    create_report_pdf,
     customer_profit_report,
     dashboard_metrics,
     date_range_for_filter,
@@ -300,6 +301,7 @@ TEXT = {
         "add_products_first": "Once urun ekleyin.",
         "line_count": "Kalem sayisi",
         "product_line": "Urun",
+        "product_category": "Urun kategorisi",
         "quantity": "Miktar",
         "unit_price": "Birim fiyat",
         "total": "Toplam",
@@ -371,6 +373,8 @@ TEXT = {
         "create_pdf": "Profesyonel PDF fatura olustur",
         "invoice_created": "Fatura olusturuldu. Genel toplam:",
         "download_pdf": "PDF indir",
+        "download_report_pdf": "Raporu PDF indir",
+        "report_pdf_ready": "Rapor PDF hazir.",
     },
     "en": {
         "menu_label": "Page",
@@ -422,6 +426,7 @@ TEXT = {
         "add_products_first": "Add products first.",
         "line_count": "Line count",
         "product_line": "Product",
+        "product_category": "Product category",
         "quantity": "Quantity",
         "unit_price": "Unit price",
         "total": "Total",
@@ -493,6 +498,8 @@ TEXT = {
         "create_pdf": "Create professional PDF invoice",
         "invoice_created": "Invoice created. Grand total:",
         "download_pdf": "Download PDF",
+        "download_report_pdf": "Download report PDF",
+        "report_pdf_ready": "Report PDF is ready.",
     },
 }
 
@@ -647,20 +654,40 @@ def build_sale_items(products: pd.DataFrame, prefix: str, defaults: pd.DataFrame
     items = []
     for index in range(int(count)):
         default = defaults.iloc[index] if defaults is not None and index < len(defaults) else None
-        c1, c2, c3, c4 = st.columns([3, 1, 1, 1])
-        product_ids = products["id"].tolist()
-        default_product_id = int(default["product_id"]) if default is not None else product_ids[0]
-        product_id = c1.selectbox(
+        c1, c2, c3, c4, c5 = st.columns([2, 3, 1, 1, 1])
+        categories = sorted(products["category"].dropna().unique().tolist())
+        all_product_ids = products["id"].tolist()
+        default_product_id = int(default["product_id"]) if default is not None else all_product_ids[0]
+        default_product = products.loc[products["id"] == default_product_id].iloc[0] if default_product_id in products["id"].tolist() else products.iloc[0]
+        default_category = default_product["category"]
+        category = c1.selectbox(
+            t("product_category"),
+            categories,
+            index=categories.index(default_category) if default_category in categories else 0,
+            key=f"{prefix}_category_{index}",
+        )
+        category_products = products.loc[products["category"] == category]
+        product_ids = category_products["id"].tolist()
+        if default_product_id not in product_ids:
+            default_product_id = product_ids[0]
+        product_id = c2.selectbox(
             f"{t('product_line')} {index + 1}",
             product_ids,
             index=product_ids.index(default_product_id) if default_product_id in product_ids else 0,
-            format_func=lambda x: products.loc[products["id"] == x, "name"].iloc[0],
+            format_func=lambda x: category_products.loc[category_products["id"] == x, "name"].iloc[0],
             key=f"{prefix}_product_{index}",
         )
         product = products.loc[products["id"] == product_id].iloc[0]
-        quantity = c2.number_input(t("quantity"), min_value=0.01, value=float(default["quantity"]) if default is not None else 1.0, step=1.0, key=f"{prefix}_qty_{index}")
-        unit_price = c3.number_input(t("unit_price"), min_value=0.0, value=float(default["unit_price"]) if default is not None else float(product["sale_price"]), step=0.25, key=f"{prefix}_price_{index}")
-        c4.metric(t("total"), money(quantity * unit_price))
+        quantity = c3.number_input(t("quantity"), min_value=0.01, value=float(default["quantity"]) if default is not None else 1.0, step=1.0, key=f"{prefix}_qty_{index}")
+        default_price = float(default["unit_price"]) if default is not None and int(default["product_id"]) == int(product_id) else float(product["sale_price"])
+        unit_price = c4.number_input(
+            t("unit_price"),
+            min_value=0.0,
+            value=default_price,
+            step=0.25,
+            key=f"{prefix}_price_{index}_{product_id}",
+        )
+        c5.metric(t("total"), money(quantity * unit_price))
         items.append({"product_id": int(product_id), "quantity": quantity, "unit_price": unit_price})
     return items
 
@@ -674,19 +701,23 @@ def sales_page() -> None:
         return
 
     with st.expander(t("new_sale"), expanded=True):
-        with st.form("new_sale"):
-            c1, c2 = st.columns(2)
-            customer_id = c1.selectbox(t("customer"), customers["id"], format_func=lambda x: customers.loc[customers["id"] == x, "name"].iloc[0])
-            sale_date = c2.date_input(t("date"), value=date.today())
-            notes = st.text_input(t("note"))
-            items = build_sale_items(products, "new_sale")
-            if st.form_submit_button(t("save_sale"), type="primary"):
-                try:
-                    create_sale(int(customer_id), sale_date, items, notes)
-                    st.success(t("sale_saved"))
-                    st.rerun()
-                except ValueError as exc:
-                    st.error(str(exc))
+        c1, c2 = st.columns(2)
+        customer_id = c1.selectbox(
+            t("customer"),
+            customers["id"],
+            format_func=lambda x: customers.loc[customers["id"] == x, "name"].iloc[0],
+            key="new_sale_customer",
+        )
+        sale_date = c2.date_input(t("date"), value=date.today(), key="new_sale_date")
+        notes = st.text_input(t("note"), key="new_sale_notes")
+        items = build_sale_items(products, "new_sale")
+        if st.button(t("save_sale"), type="primary", key="new_sale_submit"):
+            try:
+                create_sale(int(customer_id), sale_date, items, notes)
+                st.success(t("sale_saved"))
+                st.rerun()
+            except ValueError as exc:
+                st.error(str(exc))
 
     st.subheader(t("sales_records"))
     sales = get_sales_summary()
@@ -699,32 +730,31 @@ def sales_page() -> None:
         current_items = get_sale_items(int(sale_id))
         st.caption(t("current_items"))
         show_df(current_items[["product_name", "quantity", "unit", "unit_price", "total_amount"]])
-        with st.form("edit_sale"):
-            c1, c2 = st.columns(2)
-            current_customer_name = sale_row["customer"]
-            current_customer_id = int(customers.loc[customers["name"] == current_customer_name, "id"].iloc[0])
-            customer_id = c1.selectbox(
-                t("customer"),
-                customers["id"],
-                index=customers["id"].tolist().index(current_customer_id),
-                format_func=lambda x: customers.loc[customers["id"] == x, "name"].iloc[0],
-                key="edit_customer",
-            )
-            sale_date = c2.date_input(t("date"), value=pd.to_datetime(sale_row["sale_date"]).date(), key="edit_date")
-            notes = st.text_input(t("note"), value=sale_row["notes"] or "")
-            items = build_sale_items(products, "edit_sale", current_items)
-            save, delete = st.columns(2)
-            if save.form_submit_button(t("update_sale")):
-                try:
-                    replace_sale(int(sale_id), int(customer_id), sale_date, items, notes)
-                    st.success(t("sale_updated"))
-                    st.rerun()
-                except ValueError as exc:
-                    st.error(str(exc))
-            if delete.form_submit_button(t("delete_sale")):
-                delete_sale(int(sale_id))
-                st.success(t("sale_deleted"))
+        c1, c2 = st.columns(2)
+        current_customer_name = sale_row["customer"]
+        current_customer_id = int(customers.loc[customers["name"] == current_customer_name, "id"].iloc[0])
+        customer_id = c1.selectbox(
+            t("customer"),
+            customers["id"],
+            index=customers["id"].tolist().index(current_customer_id),
+            format_func=lambda x: customers.loc[customers["id"] == x, "name"].iloc[0],
+            key=f"edit_customer_{sale_id}",
+        )
+        sale_date = c2.date_input(t("date"), value=pd.to_datetime(sale_row["sale_date"]).date(), key=f"edit_date_{sale_id}")
+        notes = st.text_input(t("note"), value=sale_row["notes"] or "", key=f"edit_notes_{sale_id}")
+        items = build_sale_items(products, f"edit_sale_{sale_id}", current_items)
+        save, delete = st.columns(2)
+        if save.button(t("update_sale"), key=f"edit_sale_submit_{sale_id}"):
+            try:
+                replace_sale(int(sale_id), int(customer_id), sale_date, items, notes)
+                st.success(t("sale_updated"))
                 st.rerun()
+            except ValueError as exc:
+                st.error(str(exc))
+        if delete.button(t("delete_sale"), key=f"delete_sale_submit_{sale_id}"):
+            delete_sale(int(sale_id))
+            st.success(t("sale_deleted"))
+            st.rerun()
 
 
 def expenses_page() -> None:
@@ -782,6 +812,15 @@ def reports_page() -> None:
     m2.metric(t("total_cost"), money(totals["total_cost"]))
     m3.metric(t("expenses"), money(totals["total_expenses"]))
     m4.metric(t("net_profit"), money(totals["net_profit"]))
+
+    report_pdf = create_report_pdf(start_date, end_date, lang_code())
+    st.download_button(
+        t("download_report_pdf"),
+        data=report_pdf,
+        file_name=f"ny_fresh_depot_report_{start_date}_{end_date}.pdf",
+        mime="application/pdf",
+        type="primary",
+    )
 
     tabs = st.tabs([t("all_sales"), t("by_customer"), t("by_product"), t("expenses")])
     with tabs[0]:
