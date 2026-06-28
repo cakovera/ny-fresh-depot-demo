@@ -50,21 +50,16 @@ def apply_theme() -> None:
         <style>
         :root {
             --primary: #256f46;
-            --primary-dark: #17452d;
-            --accent: #d18825;
             --ink: #17231b;
             --muted: #65736b;
-            --surface: #f7faf7;
             --line: #dfe8e1;
         }
         .stApp {
-            background:
-                radial-gradient(circle at top left, rgba(37,111,70,.10), transparent 32rem),
-                linear-gradient(180deg, #fbfdfb 0%, #f3f7f4 100%);
+            background: #f7faf7;
             color: var(--ink);
         }
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #183823 0%, #102418 100%);
+            background: #183823;
         }
         [data-testid="stSidebar"] h1,
         [data-testid="stSidebar"] h2,
@@ -78,53 +73,17 @@ def apply_theme() -> None:
             border-radius: 8px;
             padding: 4px 8px;
         }
-        [data-testid="stSidebar"] [data-baseweb="select"],
-        [data-testid="stSidebar"] [data-baseweb="select"] > div {
-            background: #ffffff !important;
-            border-color: #c9d8cf !important;
-        }
-        [data-testid="stSidebar"] [data-baseweb="select"] *,
-        [data-testid="stSidebar"] [data-baseweb="select"] input,
-        [data-testid="stSidebar"] [data-baseweb="select"] div,
-        [data-testid="stSidebar"] [data-baseweb="select"] span {
-            color: #17231b !important;
-        }
-        [data-testid="stSidebar"] [data-baseweb="select"] svg {
-            color: #17231b !important;
-            fill: #17231b !important;
-        }
-        [data-baseweb="popover"] [role="listbox"],
-        [data-baseweb="popover"] [role="option"] {
-            background: #ffffff !important;
-            color: #17231b !important;
-        }
         h1, h2, h3 {
             letter-spacing: 0;
             color: var(--ink);
-        }
-        .stApp p,
-        .stApp label,
-        .stApp span,
-        .stApp div {
-            color: var(--ink);
-        }
-        input,
-        textarea,
-        [data-baseweb="input"] input,
-        [data-baseweb="textarea"] textarea,
-        [data-baseweb="select"] input,
-        [data-baseweb="select"] span,
-        [data-baseweb="select"] div {
-            color: #17231b !important;
         }
         .app-header {
             padding: 18px 20px;
             border: 1px solid var(--line);
             border-left: 7px solid var(--primary);
             border-radius: 8px;
-            background: rgba(255,255,255,.86);
+            background: #ffffff;
             margin-bottom: 18px;
-            box-shadow: 0 8px 24px rgba(20,50,28,.06);
         }
         .app-header h1 {
             margin: 0 0 4px 0;
@@ -140,10 +99,6 @@ def apply_theme() -> None:
             border: 1px solid var(--line);
             border-radius: 8px;
             padding: 14px 16px;
-            box-shadow: 0 8px 22px rgba(20,50,28,.06);
-        }
-        [data-testid="stMetric"] * {
-            color: #17231b !important;
         }
         .stButton > button, .stDownloadButton > button {
             border-radius: 7px;
@@ -160,10 +115,25 @@ def apply_theme() -> None:
             border-radius: 8px;
             overflow: hidden;
             background: #ffffff;
+        }
+        input, textarea {
+            background: #ffffff !important;
             color: #17231b !important;
         }
-        div[data-testid="stDataFrame"] *,
-        div[data-testid="stDataEditor"] * {
+        [data-baseweb="input"] > div,
+        [data-baseweb="textarea"] > div,
+        [data-baseweb="select"] > div {
+            background: #ffffff !important;
+            color: #17231b !important;
+            border-color: #c9d8cf !important;
+        }
+        [data-baseweb="input"] *,
+        [data-baseweb="textarea"] *,
+        [data-baseweb="select"] * {
+            color: #17231b !important;
+        }
+        [data-baseweb="popover"] * {
+            background: #ffffff !important;
             color: #17231b !important;
         }
         @media (max-width: 640px) {
