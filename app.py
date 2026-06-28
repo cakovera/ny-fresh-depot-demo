@@ -73,9 +73,24 @@ def apply_theme() -> None:
             border-radius: 8px;
             padding: 4px 8px;
         }
+        [data-testid="stSidebar"] [data-baseweb="select"] label,
+        [data-testid="stSidebar"] [data-baseweb="select"] span,
+        [data-testid="stSidebar"] [data-baseweb="select"] div {
+            color: #17231b !important;
+        }
         h1, h2, h3 {
             letter-spacing: 0;
             color: var(--ink);
+        }
+        [data-testid="stAppViewContainer"] label,
+        [data-testid="stAppViewContainer"] label span,
+        [data-testid="stAppViewContainer"] .stTextInput label,
+        [data-testid="stAppViewContainer"] .stNumberInput label,
+        [data-testid="stAppViewContainer"] .stSelectbox label,
+        [data-testid="stAppViewContainer"] .stDateInput label,
+        [data-testid="stAppViewContainer"] .stTextArea label {
+            color: #17231b !important;
+            opacity: 1 !important;
         }
         .app-header {
             padding: 18px 20px;
@@ -100,6 +115,12 @@ def apply_theme() -> None:
             border-radius: 8px;
             padding: 14px 16px;
         }
+        [data-testid="stMetric"] *,
+        [data-testid="stMetricLabel"] *,
+        [data-testid="stMetricValue"] * {
+            color: #17231b !important;
+            opacity: 1 !important;
+        }
         .stButton > button, .stDownloadButton > button {
             border-radius: 7px;
             border: 1px solid var(--primary);
@@ -109,6 +130,20 @@ def apply_theme() -> None:
             border: 1px solid var(--line);
             border-radius: 8px;
             background: #ffffff;
+        }
+        div[data-testid="stExpander"] details,
+        div[data-testid="stExpander"] summary,
+        div[data-testid="stExpander"] summary * {
+            background: #ffffff !important;
+            color: #17231b !important;
+            opacity: 1 !important;
+        }
+        div[data-testid="stExpander"] label,
+        div[data-testid="stExpander"] label *,
+        div[data-testid="stExpander"] p,
+        div[data-testid="stExpander"] span {
+            color: #17231b !important;
+            opacity: 1 !important;
         }
         div[data-testid="stDataFrame"], div[data-testid="stDataEditor"] {
             border: 1px solid var(--line);
@@ -131,10 +166,22 @@ def apply_theme() -> None:
         [data-baseweb="textarea"] *,
         [data-baseweb="select"] * {
             color: #17231b !important;
+            opacity: 1 !important;
         }
         [data-baseweb="popover"] * {
             background: #ffffff !important;
             color: #17231b !important;
+            opacity: 1 !important;
+        }
+        div[data-testid="stForm"] {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 12px;
+        }
+        div[data-testid="stForm"] *:not(button):not(svg):not(path) {
+            color: #17231b !important;
+            opacity: 1 !important;
         }
         @media (max-width: 640px) {
             .app-header {
