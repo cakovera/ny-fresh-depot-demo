@@ -66,17 +66,27 @@ def apply_theme() -> None:
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #183823 0%, #102418 100%);
         }
-        [data-testid="stSidebar"] * {
+        [data-testid="stSidebar"] h1,
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3,
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] span {
             color: #eef8f0 !important;
         }
         [data-testid="stSidebar"] .stRadio label {
             border-radius: 8px;
             padding: 4px 8px;
         }
-        [data-testid="stSidebar"] [data-baseweb="select"] div {
-            color: #17231b !important;
+        [data-testid="stSidebar"] [data-baseweb="select"],
+        [data-testid="stSidebar"] [data-baseweb="select"] > div {
+            background: #ffffff !important;
+            border-color: #c9d8cf !important;
         }
-        [data-testid="stSidebar"] [data-baseweb="select"] input {
+        [data-testid="stSidebar"] [data-baseweb="select"] *,
+        [data-testid="stSidebar"] [data-baseweb="select"] input,
+        [data-testid="stSidebar"] [data-baseweb="select"] div,
+        [data-testid="stSidebar"] [data-baseweb="select"] span {
             color: #17231b !important;
         }
         [data-testid="stSidebar"] [data-baseweb="select"] svg {
@@ -91,6 +101,21 @@ def apply_theme() -> None:
         h1, h2, h3 {
             letter-spacing: 0;
             color: var(--ink);
+        }
+        .stApp p,
+        .stApp label,
+        .stApp span,
+        .stApp div {
+            color: var(--ink);
+        }
+        input,
+        textarea,
+        [data-baseweb="input"] input,
+        [data-baseweb="textarea"] textarea,
+        [data-baseweb="select"] input,
+        [data-baseweb="select"] span,
+        [data-baseweb="select"] div {
+            color: #17231b !important;
         }
         .app-header {
             padding: 18px 20px;
@@ -117,6 +142,9 @@ def apply_theme() -> None:
             padding: 14px 16px;
             box-shadow: 0 8px 22px rgba(20,50,28,.06);
         }
+        [data-testid="stMetric"] * {
+            color: #17231b !important;
+        }
         .stButton > button, .stDownloadButton > button {
             border-radius: 7px;
             border: 1px solid var(--primary);
@@ -131,6 +159,31 @@ def apply_theme() -> None:
             border: 1px solid var(--line);
             border-radius: 8px;
             overflow: hidden;
+            background: #ffffff;
+            color: #17231b !important;
+        }
+        div[data-testid="stDataFrame"] *,
+        div[data-testid="stDataEditor"] * {
+            color: #17231b !important;
+        }
+        @media (max-width: 640px) {
+            .app-header {
+                padding: 14px 14px;
+                margin-bottom: 14px;
+            }
+            .app-header h1 {
+                font-size: 22px;
+            }
+            .app-header p {
+                font-size: 14px;
+            }
+            [data-testid="stMetric"] {
+                padding: 12px 12px;
+            }
+            [data-testid="stMetricLabel"] p,
+            [data-testid="stMetricValue"] div {
+                font-size: 15px !important;
+            }
         }
         </style>
         """,
